@@ -9,7 +9,7 @@ import java.util.List;
 public interface SearchContract {
 
     interface View {
-        void showMovies(List<Movie> movieList);
+        void showMovies(@NonNull List<Movie> movieList);
 
         void showErrorMessage();
     }

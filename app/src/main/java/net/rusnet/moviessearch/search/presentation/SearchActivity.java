@@ -6,15 +6,18 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import net.rusnet.moviessearch.R;
 import net.rusnet.moviessearch.commons.Injection;
 import net.rusnet.moviessearch.search.domain.model.Movie;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SearchActivity extends AppCompatActivity implements SearchContract.View {
@@ -23,7 +26,8 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
 
     private EditText mSearchEditText;
     private ImageButton mSearchButton;
-    private TextView mRecyclerView;
+    private RecyclerView mRecyclerView;
+    private MoviesAdapter mMoviesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +46,17 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
                 hideKeyboard();
             }
         });
-        mRecyclerView = findViewById(R.id.recycler_view);
 
+        mRecyclerView = findViewById(R.id.recycler_view);
+        mMoviesAdapter = new MoviesAdapter(new ArrayList<Movie>());
+        mRecyclerView.setAdapter(mMoviesAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override
-    public void showMovies(List<Movie> movieList) {
-        //todo: implement
+    public void showMovies(@NonNull List<Movie> movieList) {
+        mMoviesAdapter.setMovieList(movieList);
+        mMoviesAdapter.notifyDataSetChanged();
     }
 
     @Override

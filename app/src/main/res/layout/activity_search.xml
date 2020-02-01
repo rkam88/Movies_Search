@@ -30,13 +30,12 @@
         app:layout_constraintTop_toTopOf="@id/edit_text_search" />
 
 
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/default_margin"
         android:layout_weight="1"
-        android:text="RECYCLER PLACEHOLDER"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/button_search"
         app:layout_constraintStart_toStartOf="@id/edit_text_search"

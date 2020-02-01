@@ -29,6 +29,12 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 
+    //Picasso
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+
+    //RecyclerView
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+
     //tests
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

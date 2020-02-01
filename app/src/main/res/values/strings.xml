@@ -2,5 +2,6 @@
     <string name="app_name">Movies Search</string>
     <string name="enter_film_name">Введите название фильма</string>
     <string name="error_message">Ошибка при попытки найти фильмы!</string>
+    <string name="movie_title">%s (%s)"</string>
 
 </resources>

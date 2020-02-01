@@ -21,6 +21,8 @@ public class MoviesRemoteDataSource implements IMoviesRemoteDataSource {
 
     private static final String BASE_URL = "http://omdbapi.com/";
     private static final String API_KEY = "3b6ee26";
+    private static final String NO_POSTER = "N/A";
+    private static final String EMPTY_STRING = "";
     private Retrofit mRetrofit;
 
     public MoviesRemoteDataSource() {
@@ -51,7 +53,7 @@ public class MoviesRemoteDataSource implements IMoviesRemoteDataSource {
                         Movie movie = new Movie(
                                 omDbMovie.getTitle(),
                                 omDbMovie.getYear(),
-                                omDbMovie.getPoster()
+                                (omDbMovie.getPoster().equals(NO_POSTER) ? EMPTY_STRING : omDbMovie.getPoster())
                         );
                         movieList.add(movie);
                     }
