@@ -2,7 +2,9 @@ package net.rusnet.moviessearch.search.domain.model;
 
 import androidx.annotation.NonNull;
 
-public class Movie {
+import java.io.Serializable;
+
+public class Movie implements Serializable {
 
     private final String mTitle;
     private final String mYear;

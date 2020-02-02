@@ -40,6 +40,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         mMovieList = movieList;
     }
 
+    @NonNull
+    public List<Movie> getMovieList() {
+        return mMovieList;
+    }
+
     public void setMovieList(List<Movie> movieList) {
         mMovieList = movieList;
     }

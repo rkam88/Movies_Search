@@ -26,6 +26,7 @@ import java.util.List;
 public class SearchActivity extends AppCompatActivity implements SearchContract.View {
 
     private static final int STARTING_SCROLL_POSITION = 0;
+    public static final String KEY_MOVIE_LIST = "MOVIE_LIST";
 
     private SearchContract.Presenter mPresenter;
     private EditText mSearchEditText;
@@ -62,9 +63,24 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
         });
 
         mRecyclerView = findViewById(R.id.recycler_view);
-        mMoviesAdapter = new MoviesAdapter(new ArrayList<Movie>());
+
+        List<Movie> movieList = new ArrayList<>();
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_MOVIE_LIST)) {
+            //noinspection unchecked
+            movieList = (ArrayList<Movie>) savedInstanceState.getSerializable(KEY_MOVIE_LIST);
+        }
+        if (movieList == null) movieList = new ArrayList<>();
+        mMoviesAdapter = new MoviesAdapter(movieList);
+
         mRecyclerView.setAdapter(mMoviesAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putSerializable(KEY_MOVIE_LIST,
+                new ArrayList<>(mMoviesAdapter.getMovieList()));
+        super.onSaveInstanceState(outState);
     }
 
     @Override
