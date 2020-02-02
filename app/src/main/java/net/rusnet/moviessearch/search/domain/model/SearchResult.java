@@ -16,6 +16,8 @@ public class SearchResult {
     public SearchResult(@NonNull SearchResultStatus searchResultStatus,
                         long totalResults,
                         @Nullable List<Movie> movieList) {
+        if (searchResultStatus == SearchResultStatus.SUCCESSFUL && movieList == null)
+            throw new IllegalArgumentException();
         mSearchResultStatus = searchResultStatus;
         mTotalResults = totalResults;
         mMovieList = movieList;

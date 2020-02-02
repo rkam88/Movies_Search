@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import net.rusnet.moviessearch.commons.domain.usecase.UseCase;
 import net.rusnet.moviessearch.search.domain.model.Movie;
 import net.rusnet.moviessearch.search.domain.model.SearchResult;
+import net.rusnet.moviessearch.search.domain.model.SearchResultStatus;
 import net.rusnet.moviessearch.search.domain.usecase.PerformSearch;
 
 import java.lang.ref.WeakReference;
@@ -34,8 +35,10 @@ public class SearchPresenter implements SearchContract.Presenter {
                             case SUCCESSFUL:
                                 showMovies(result.getMovieList());
                                 break;
-                            case ERROR:
-                                showErrorMessage();
+                            case ERROR_REQUEST:
+                            case ERROR_NETWORK:
+                            case ERROR_OTHER:
+                                showErrorMessage(result.getSearchResultStatus());
                                 break;
                         }
                     }
@@ -43,17 +46,27 @@ public class SearchPresenter implements SearchContract.Presenter {
         );
     }
 
-    private void showMovies(List<Movie> movieList) {
+    private void showMovies(@NonNull List<Movie> movieList) {
         SearchContract.View view = mSearchViewWeakReference.get();
         if (view != null) {
             view.showMovies(movieList);
         }
     }
 
-    private void showErrorMessage() {
+    private void showErrorMessage(@NonNull SearchResultStatus searchResultStatus) {
         SearchContract.View view = mSearchViewWeakReference.get();
         if (view != null) {
-            view.showErrorMessage();
+            switch (searchResultStatus) {
+                case ERROR_REQUEST:
+                    view.showRequestErrorMessage();
+                    break;
+                case ERROR_NETWORK:
+                    view.showNetworkErrorMessage();
+                    break;
+                case ERROR_OTHER:
+                    view.showOtherErrorMessage();
+                    break;
+            }
         }
     }
 }

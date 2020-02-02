@@ -8,6 +8,7 @@ import net.rusnet.moviessearch.search.domain.model.Movie;
 import net.rusnet.moviessearch.search.domain.model.SearchResult;
 import net.rusnet.moviessearch.search.domain.model.SearchResultStatus;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class MoviesRemoteDataSource implements IMoviesRemoteDataSource {
     public void performSearch(@NonNull String query, @NonNull final onSearchResultCallback callback) {
         Call<OMDbSearchResponse> call = mOmdbApi.getResults(query, API_KEY);
         call.enqueue(new Callback<OMDbSearchResponse>() {
+
             @Override
             public void onResponse(Call<OMDbSearchResponse> call,
                                    Response<OMDbSearchResponse> response) {
@@ -56,28 +58,29 @@ public class MoviesRemoteDataSource implements IMoviesRemoteDataSource {
                             SearchResultStatus.SUCCESSFUL,
                             Long.parseLong(totalResultsAsString),
                             movieList);
-
-                } else if (response.isSuccessful() &&
-                        response.body() != null &&
-                        response.body().getOMDbMovies() == null) {
-                    searchResult = new SearchResult(
-                            SearchResultStatus.ERROR,
-                            0,
-                            null);
                 } else {
                     searchResult = new SearchResult(
-                            SearchResultStatus.ERROR,
+                            SearchResultStatus.ERROR_REQUEST,
                             0,
                             null);
                 }
-
                 callback.onResult(searchResult);
             }
 
             @Override
             public void onFailure(Call<OMDbSearchResponse> call,
                                   Throwable t) {
-                callback.onResult(new SearchResult(SearchResultStatus.ERROR, 0, null));
+                if (t instanceof IOException) {
+                    callback.onResult(new SearchResult(
+                            SearchResultStatus.ERROR_NETWORK,
+                            0,
+                            null));
+                } else {
+                    callback.onResult(new SearchResult(
+                            SearchResultStatus.ERROR_OTHER,
+                            0,
+                            null));
+                }
             }
         });
     }

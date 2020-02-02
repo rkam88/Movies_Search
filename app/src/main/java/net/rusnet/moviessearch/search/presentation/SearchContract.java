@@ -11,7 +11,11 @@ public interface SearchContract {
     interface View {
         void showMovies(@NonNull List<Movie> movieList);
 
-        void showErrorMessage();
+        void showRequestErrorMessage();
+
+        void showNetworkErrorMessage();
+
+        void showOtherErrorMessage();
     }
 
     interface Presenter {

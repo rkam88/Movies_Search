@@ -3,5 +3,7 @@ package net.rusnet.moviessearch.search.domain.model;
 public enum SearchResultStatus {
 
     SUCCESSFUL,
-    ERROR
+    ERROR_REQUEST,
+    ERROR_NETWORK,
+    ERROR_OTHER
 }

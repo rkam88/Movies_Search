@@ -94,8 +94,18 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
     }
 
     @Override
-    public void showErrorMessage() {
+    public void showRequestErrorMessage() {
         Toast.makeText(this, R.string.error_message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showNetworkErrorMessage() {
+        Toast.makeText(this, R.string.network_error_message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showOtherErrorMessage() {
+        Toast.makeText(this, R.string.other_error_message, Toast.LENGTH_SHORT).show();
     }
 
     private void hideKeyboard() {
