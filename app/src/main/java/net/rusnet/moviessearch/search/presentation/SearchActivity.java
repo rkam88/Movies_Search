@@ -22,6 +22,8 @@ import java.util.List;
 
 public class SearchActivity extends AppCompatActivity implements SearchContract.View {
 
+    private static final int STARTING_SCROLL_POSITION = 0;
+
     private SearchContract.Presenter mPresenter;
     private EditText mSearchEditText;
     private ImageButton mSearchButton;
@@ -56,6 +58,10 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
     public void showMovies(@NonNull List<Movie> movieList) {
         mMoviesAdapter.setMovieList(movieList);
         mMoviesAdapter.notifyDataSetChanged();
+        RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
+        if (layoutManager != null) {
+            layoutManager.scrollToPosition(STARTING_SCROLL_POSITION);
+        }
     }
 
     @Override
