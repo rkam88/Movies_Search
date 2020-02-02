@@ -2,10 +2,13 @@ package net.rusnet.moviessearch.search.presentation;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -45,6 +48,16 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
             public void onClick(View v) {
                 mPresenter.performSearch(mSearchEditText.getText().toString());
                 hideKeyboard();
+            }
+        });
+        mSearchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    mSearchButton.callOnClick();
+                    return true;
+                }
+                return false;
             }
         });
 
