@@ -14,29 +14,21 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MoviesRemoteDataSource implements IMoviesRemoteDataSource {
 
-    private static final String BASE_URL = "http://omdbapi.com/";
     private static final String API_KEY = "3b6ee26";
     private static final String NO_POSTER = "N/A";
     private static final String EMPTY_STRING = "";
-    private Retrofit mRetrofit;
+    private OmdbApi mOmdbApi;
 
-    public MoviesRemoteDataSource() {
-        mRetrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+    public MoviesRemoteDataSource(@NonNull OmdbApi omdbApi) {
+        mOmdbApi = omdbApi;
     }
-
 
     @Override
     public void performSearch(@NonNull String query, @NonNull final onSearchResultCallback callback) {
-        OMDbEndpointInterface omDbApi = mRetrofit.create(OMDbEndpointInterface.class);
-        Call<OMDbSearchResponse> call = omDbApi.getResults(query, API_KEY);
+        Call<OMDbSearchResponse> call = mOmdbApi.getResults(query, API_KEY);
         call.enqueue(new Callback<OMDbSearchResponse>() {
             @Override
             public void onResponse(Call<OMDbSearchResponse> call,

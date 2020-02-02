@@ -15,10 +15,13 @@ public class SearchPresenter implements SearchContract.Presenter {
     private WeakReference<SearchContract.View> mSearchViewWeakReference;
     private PerformSearch mPerformSearch;
 
-    public SearchPresenter(@NonNull SearchContract.View view,
-                           @NonNull PerformSearch performSearch) {
-        mSearchViewWeakReference = new WeakReference<>(view);
+    public SearchPresenter(@NonNull PerformSearch performSearch) {
         mPerformSearch = performSearch;
+    }
+
+    @Override
+    public void setView(@NonNull SearchContract.View view) {
+        mSearchViewWeakReference = new WeakReference<>(view);
     }
 
     @Override

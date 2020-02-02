@@ -15,6 +15,8 @@ public interface SearchContract {
     }
 
     interface Presenter {
+        void setView(@NonNull SearchContract.View view);
+
         void performSearch(@NonNull String searchQuery);
     }
 

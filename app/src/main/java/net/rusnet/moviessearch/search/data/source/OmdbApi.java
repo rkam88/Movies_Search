@@ -6,7 +6,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-public interface OMDbEndpointInterface {
+public interface OmdbApi {
 
     @GET(".")
     Call<OMDbSearchResponse> getResults(@Query("s") String searchQuery,

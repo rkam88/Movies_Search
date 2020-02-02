@@ -23,7 +23,6 @@ import java.util.List;
 public class SearchActivity extends AppCompatActivity implements SearchContract.View {
 
     private SearchContract.Presenter mPresenter;
-
     private EditText mSearchEditText;
     private ImageButton mSearchButton;
     private RecyclerView mRecyclerView;
@@ -34,8 +33,8 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        mPresenter = new SearchPresenter(this,
-                Injection.providePerformSearchUseCase());
+        mPresenter = Injection.provideSearchPresenter();
+        mPresenter.setView(this);
 
         mSearchEditText = findViewById(R.id.edit_text_search);
         mSearchButton = findViewById(R.id.button_search);
@@ -72,5 +71,6 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
 }
 
