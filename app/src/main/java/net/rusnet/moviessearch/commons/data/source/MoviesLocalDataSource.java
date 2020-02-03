@@ -25,7 +25,7 @@ public class MoviesLocalDataSource implements IMoviesLocalDataSource {
         for (RoomMovie roomMovie : mMovieDao.getAllMovies()) {
             movieList.add(new Movie(roomMovie.getTitle(),
                     roomMovie.getYear(),
-                    EMPTY_STRING,
+                    roomMovie.getPosterURL(),
                     roomMovie.getImdbID(),
                     true));
         }
@@ -36,7 +36,8 @@ public class MoviesLocalDataSource implements IMoviesLocalDataSource {
     public void addMovie(@NonNull Movie movie) {
         mMovieDao.addMovie(new RoomMovie(movie.getTitle(),
                 movie.getYear(),
-                movie.getImdbID()));
+                movie.getImdbID(),
+                movie.getPosterURL()));
     }
 
     @Override

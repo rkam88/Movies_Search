@@ -25,18 +25,24 @@ public class RoomMovie {
     @ColumnInfo(name = "imdb_id")
     private final String mImdbID;
 
-    public RoomMovie(int movieId, @NonNull String title, @NonNull String year, @NonNull String imdbID) {
+    @NonNull
+    @ColumnInfo(name = "poster_url")
+    private final String mPosterURL;
+
+    public RoomMovie(int movieId, @NonNull String title, @NonNull String year, @NonNull String imdbID, @NonNull String posterURL) {
         mMovieId = movieId;
         mTitle = title;
         mYear = year;
         mImdbID = imdbID;
+        mPosterURL = posterURL;
     }
 
     @Ignore
-    public RoomMovie(@NonNull String title, @NonNull String year, @NonNull String imdbID) {
+    public RoomMovie(@NonNull String title, @NonNull String year, @NonNull String imdbID, @NonNull String posterURL) {
         mTitle = title;
         mYear = year;
         mImdbID = imdbID;
+        mPosterURL = posterURL;
     }
 
     public int getMovieId() {
@@ -56,5 +62,10 @@ public class RoomMovie {
     @NonNull
     public String getImdbID() {
         return mImdbID;
+    }
+
+    @NonNull
+    public String getPosterURL() {
+        return mPosterURL;
     }
 }
