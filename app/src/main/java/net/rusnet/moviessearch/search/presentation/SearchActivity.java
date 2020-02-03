@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,6 +42,7 @@ public class SearchActivity extends AppCompatActivity
     private static final String KEY_SEARCH_QUERY = "KEY_SEARCH_QUERY";
     private static final String KEY_FAVORITE_MOVIES = "KEY_FAVORITE_MOVIES";
     private static final int ZERO = 0;
+    public static final int MODIFY_FAVORITES_REQUEST_CODE = 1;
 
     private SearchContract.Presenter mPresenter;
     private EditText mSearchEditText;
@@ -135,8 +137,17 @@ public class SearchActivity extends AppCompatActivity
         if (item.getItemId() == R.id.menu_favorites) {
             Intent intent = new Intent(this, FavoritesActivity.class);
             intent.putExtra(EXTRA_FAVORITE_MOVIES_LIST, new ArrayList<>(mMoviesAdapter.getFavoriteMovies()));
-            startActivity(intent);
+            startActivityForResult(intent, MODIFY_FAVORITES_REQUEST_CODE);
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == MODIFY_FAVORITES_REQUEST_CODE &&
+                resultCode == RESULT_OK) {
+            mPresenter.loadFavoriteMovies();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void initPresenter() {

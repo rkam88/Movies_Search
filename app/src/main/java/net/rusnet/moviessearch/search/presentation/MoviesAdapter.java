@@ -138,6 +138,15 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
     public void setFavoriteMovies(@NonNull List<Movie> favoriteMovies) {
         mFavoriteMovies = favoriteMovies;
+        if (!mMovieList.isEmpty()) {
+            for (Movie movie : mMovieList) {
+                movie.setInFavorites(false);
+                for (Movie favoriteMovie : mFavoriteMovies) {
+                    if (movie.getImdbID().equals(favoriteMovie.getImdbID()))
+                        movie.setInFavorites(true);
+                }
+            }
+        }
     }
 
     public void updateMovieList(@NonNull List<Movie> movieList) {
