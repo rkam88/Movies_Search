@@ -23,10 +23,14 @@ import net.rusnet.moviessearch.search.domain.model.Movie;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchActivity extends AppCompatActivity implements SearchContract.View {
+public class SearchActivity extends AppCompatActivity
+        implements SearchContract.View, MoviesAdapter.OnScrollListener {
 
     private static final int STARTING_SCROLL_POSITION = 0;
-    public static final String KEY_MOVIE_LIST = "MOVIE_LIST";
+    private static final String EMPTY_STRING = "";
+    private static final String KEY_MOVIE_LIST = "MOVIE_LIST";
+    private static final String KEY_TOTAL_RESULTS = "KEY_TOTAL_RESULTS";
+    private static final int ZERO = 0;
 
     private SearchContract.Presenter mPresenter;
     private EditText mSearchEditText;
@@ -65,12 +69,15 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
         mRecyclerView = findViewById(R.id.recycler_view);
 
         List<Movie> movieList = new ArrayList<>();
+        long totalResults = ZERO;
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_MOVIE_LIST)) {
             //noinspection unchecked
             movieList = (ArrayList<Movie>) savedInstanceState.getSerializable(KEY_MOVIE_LIST);
+            totalResults = savedInstanceState.getLong(KEY_TOTAL_RESULTS);
         }
         if (movieList == null) movieList = new ArrayList<>();
-        mMoviesAdapter = new MoviesAdapter(movieList);
+        mMoviesAdapter = new MoviesAdapter(movieList, EMPTY_STRING, totalResults);
+        mMoviesAdapter.setOnScrollListener(this);
 
         mRecyclerView.setAdapter(mMoviesAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -80,17 +87,26 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putSerializable(KEY_MOVIE_LIST,
                 new ArrayList<>(mMoviesAdapter.getMovieList()));
+        outState.putLong(KEY_TOTAL_RESULTS, mMoviesAdapter.getTotalResults());
         super.onSaveInstanceState(outState);
     }
 
     @Override
-    public void showMovies(@NonNull List<Movie> movieList) {
-        mMoviesAdapter.setMovieList(movieList);
+    public void showMovies(@NonNull List<Movie> movieList,
+                           @NonNull String searchQuery,
+                           long totalResults) {
+        mMoviesAdapter.setMovieList(movieList, searchQuery, totalResults);
         mMoviesAdapter.notifyDataSetChanged();
         RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
         if (layoutManager != null) {
             layoutManager.scrollToPosition(STARTING_SCROLL_POSITION);
         }
+    }
+
+    @Override
+    public void updateMovies(@NonNull List<Movie> movieList) {
+        mMoviesAdapter.updateMovieList(movieList);
+        mMoviesAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -106,6 +122,11 @@ public class SearchActivity extends AppCompatActivity implements SearchContract.
     @Override
     public void showOtherErrorMessage() {
         Toast.makeText(this, R.string.other_error_message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onScroll(int pageToLoad, @NonNull String searchQuery) {
+        mPresenter.loadResultsPage(pageToLoad, searchQuery);
     }
 
     private void hideKeyboard() {

@@ -31,57 +31,81 @@ public class MoviesRemoteDataSource implements IMoviesRemoteDataSource {
     public void performSearch(@NonNull String query, @NonNull final onSearchResultCallback callback) {
         Call<OMDbSearchResponse> call = mOmdbApi.getResults(query, API_KEY);
         call.enqueue(new Callback<OMDbSearchResponse>() {
-
             @Override
             public void onResponse(Call<OMDbSearchResponse> call,
                                    Response<OMDbSearchResponse> response) {
-                SearchResult searchResult;
-
-                if (response.isSuccessful() &&
-                        response.body() != null &&
-                        response.body().getOMDbMovies() != null) {
-                    List<OMDbMovie> omDbMovies = response.body().getOMDbMovies();
-                    List<Movie> movieList = new ArrayList<>();
-
-                    for (OMDbMovie omDbMovie : omDbMovies) {
-                        Movie movie = new Movie(
-                                omDbMovie.getTitle(),
-                                omDbMovie.getYear(),
-                                (omDbMovie.getPoster().equals(NO_POSTER) ? EMPTY_STRING : omDbMovie.getPoster())
-                        );
-                        movieList.add(movie);
-                    }
-
-                    String totalResultsAsString = response.body().getTotalResults();
-
-                    searchResult = new SearchResult(
-                            SearchResultStatus.SUCCESSFUL,
-                            Long.parseLong(totalResultsAsString),
-                            movieList);
-                } else {
-                    searchResult = new SearchResult(
-                            SearchResultStatus.ERROR_REQUEST,
-                            0,
-                            null);
-                }
-                callback.onResult(searchResult);
+                sendResultOnResponse(response, callback);
             }
 
             @Override
             public void onFailure(Call<OMDbSearchResponse> call,
                                   Throwable t) {
-                if (t instanceof IOException) {
-                    callback.onResult(new SearchResult(
-                            SearchResultStatus.ERROR_NETWORK,
-                            0,
-                            null));
-                } else {
-                    callback.onResult(new SearchResult(
-                            SearchResultStatus.ERROR_OTHER,
-                            0,
-                            null));
-                }
+                sendResultOnFailure(t, callback);
             }
         });
     }
+
+    @Override
+    public void getPage(@NonNull String query, int pageToLoad, @NonNull final onSearchResultCallback callback) {
+        Call<OMDbSearchResponse> call = mOmdbApi.getPageResults(query, pageToLoad, API_KEY);
+        call.enqueue(new Callback<OMDbSearchResponse>() {
+            @Override
+            public void onResponse(Call<OMDbSearchResponse> call, Response<OMDbSearchResponse> response) {
+                sendResultOnResponse(response, callback);
+            }
+
+            @Override
+            public void onFailure(Call<OMDbSearchResponse> call, Throwable t) {
+                sendResultOnFailure(t, callback);
+            }
+        });
+    }
+
+    private void sendResultOnResponse(Response<OMDbSearchResponse> response, @NonNull onSearchResultCallback callback) {
+        SearchResult searchResult;
+
+        if (response.isSuccessful() &&
+                response.body() != null &&
+                response.body().getOMDbMovies() != null) {
+            List<OMDbMovie> omDbMovies = response.body().getOMDbMovies();
+            List<Movie> movieList = new ArrayList<>();
+
+            for (OMDbMovie omDbMovie : omDbMovies) {
+                Movie movie = new Movie(
+                        omDbMovie.getTitle(),
+                        omDbMovie.getYear(),
+                        (omDbMovie.getPoster().equals(NO_POSTER) ? EMPTY_STRING : omDbMovie.getPoster())
+                );
+                movieList.add(movie);
+            }
+
+            String totalResultsAsString = response.body().getTotalResults();
+
+            searchResult = new SearchResult(
+                    SearchResultStatus.SUCCESSFUL,
+                    Long.parseLong(totalResultsAsString),
+                    movieList);
+        } else {
+            searchResult = new SearchResult(
+                    SearchResultStatus.ERROR_REQUEST,
+                    0,
+                    null);
+        }
+        callback.onResult(searchResult);
+    }
+
+    private void sendResultOnFailure(Throwable t, @NonNull onSearchResultCallback callback) {
+        if (t instanceof IOException) {
+            callback.onResult(new SearchResult(
+                    SearchResultStatus.ERROR_NETWORK,
+                    0,
+                    null));
+        } else {
+            callback.onResult(new SearchResult(
+                    SearchResultStatus.ERROR_OTHER,
+                    0,
+                    null));
+        }
+    }
+
 }

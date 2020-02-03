@@ -5,6 +5,7 @@ import net.rusnet.moviessearch.commons.utils.executors.DiskIOThreadExecutor;
 import net.rusnet.moviessearch.commons.utils.executors.MainThreadExecutor;
 import net.rusnet.moviessearch.search.data.source.MoviesRemoteDataSource;
 import net.rusnet.moviessearch.search.data.source.OmdbApi;
+import net.rusnet.moviessearch.search.domain.usecase.LoadResultsPage;
 import net.rusnet.moviessearch.search.domain.usecase.PerformSearch;
 import net.rusnet.moviessearch.search.presentation.SearchContract;
 import net.rusnet.moviessearch.search.presentation.SearchPresenter;
@@ -23,6 +24,7 @@ public class Injection {
     private static OmdbApi OMDB_API_INSTANCE;
     private static MoviesRemoteDataSource MOVIES_REMOTE_DATA_SOURCE_INSTANCE;
     private static PerformSearch PERFORM_SEARCH_INSTANCE;
+    private static LoadResultsPage LOAD_RESULTS_PAGE_INSTANCE;
     private static SearchContract.Presenter SEARCH_PRESENTER_INSTANCE;
 
     public static MainThreadExecutor provideMainThreadExecutor() {
@@ -78,10 +80,20 @@ public class Injection {
         return PERFORM_SEARCH_INSTANCE;
     }
 
+    public static LoadResultsPage provideLoadResultsPage() {
+        if (LOAD_RESULTS_PAGE_INSTANCE == null) {
+            LOAD_RESULTS_PAGE_INSTANCE = new LoadResultsPage(
+                    provideMoviesRemoteDataSource()
+            );
+        }
+        return LOAD_RESULTS_PAGE_INSTANCE;
+    }
+
     public static SearchContract.Presenter provideSearchPresenter() {
         if (SEARCH_PRESENTER_INSTANCE == null) {
             SEARCH_PRESENTER_INSTANCE = new SearchPresenter(
-                    providePerformSearchUseCase()
+                    providePerformSearchUseCase(),
+                    provideLoadResultsPage()
             );
         }
         return SEARCH_PRESENTER_INSTANCE;

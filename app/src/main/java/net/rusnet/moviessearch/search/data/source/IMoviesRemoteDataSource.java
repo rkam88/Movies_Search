@@ -13,4 +13,8 @@ public interface IMoviesRemoteDataSource {
     void performSearch(@NonNull String query,
                        @NonNull onSearchResultCallback callback);
 
+    void getPage(@NonNull String query,
+                 int pageToLoad,
+                 @NonNull onSearchResultCallback callback);
+
 }

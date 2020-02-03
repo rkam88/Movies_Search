@@ -19,9 +19,19 @@ import java.util.List;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
 
-    public static final String EMPTY_STRING = "";
+    private OnScrollListener mOnScrollListener;
+
+    interface OnScrollListener {
+
+        void onScroll(int pageToLoad, @NonNull String searchQuery);
+    }
+
+    public void setOnScrollListener(OnScrollListener onScrollListener) {
+        mOnScrollListener = onScrollListener;
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+
 
         TextView mTitleTextView;
         ImageView mPosterImageView;
@@ -32,12 +42,23 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
             mTitleTextView = itemView.findViewById(R.id.text_view_title);
             mPosterImageView = itemView.findViewById(R.id.image_view_poster);
         }
+
     }
 
+    private static final String EMPTY_STRING = "";
+    private static final int LOAD_MORE_OFFSET = 5;
+    private static final int NEXT_PAGE = 1;
     private List<Movie> mMovieList;
+    private long mTotalResults;
+    private int mMoviesPerPage;
+    private String mSearchQuery;
 
-    public MoviesAdapter(@NonNull List<Movie> movieList) {
+    public MoviesAdapter(@NonNull List<Movie> movieList,
+                         @NonNull String searchQuery,
+                         long totalResults) {
         mMovieList = movieList;
+        mTotalResults = totalResults;
+        mSearchQuery = searchQuery;
     }
 
     @NonNull
@@ -45,8 +66,21 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         return mMovieList;
     }
 
-    public void setMovieList(List<Movie> movieList) {
+    public long getTotalResults() {
+        return mTotalResults;
+    }
+
+    public void setMovieList(@NonNull List<Movie> movieList,
+                             @NonNull String searchQuery,
+                             long totalResults) {
         mMovieList = movieList;
+        mTotalResults = totalResults;
+        mSearchQuery = searchQuery;
+        mMoviesPerPage = mMovieList.size();
+    }
+
+    public void updateMovieList(@NonNull List<Movie> movieList) {
+        mMovieList.addAll(movieList);
     }
 
     @NonNull
@@ -84,6 +118,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
                     .placeholder(R.drawable.ic_search_black_24dp)
                     .error(R.drawable.ic_error_black_48dp)
                     .into(posterImageView);
+        }
+
+        if (mMovieList.size() != mTotalResults &&
+                position == mMovieList.size() - LOAD_MORE_OFFSET) {
+            int pageToLoad = mMovieList.size() / mMoviesPerPage + NEXT_PAGE;
+            mOnScrollListener.onScroll(pageToLoad, mSearchQuery);
         }
     }
 

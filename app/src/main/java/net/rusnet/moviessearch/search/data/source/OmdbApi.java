@@ -12,4 +12,8 @@ public interface OmdbApi {
     Call<OMDbSearchResponse> getResults(@Query("s") String searchQuery,
                                         @Query("apikey") String apiKey);
 
+    @GET(".")
+    Call<OMDbSearchResponse> getPageResults(@Query("s") String searchQuery,
+                                            @Query("page") int pageToLoad,
+                                            @Query("apikey") String apiKey);
 }
