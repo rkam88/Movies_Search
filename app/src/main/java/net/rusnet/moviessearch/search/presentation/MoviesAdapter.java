@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import net.rusnet.moviessearch.R;
 import net.rusnet.moviessearch.search.domain.model.Movie;
@@ -185,9 +185,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         if (imageUri.equals(EMPTY_STRING)) {
             posterImageView.setImageResource(R.drawable.ic_no_poster_black_48dp);
         } else {
-            Picasso.with(titleTextView.getContext())
+            Glide.with(titleTextView)
                     .load(imageUri)
-                    .fit()
+                    .fitCenter()
                     .centerCrop()
                     .placeholder(R.drawable.ic_search_black_24dp)
                     .error(R.drawable.ic_error_black_48dp)
