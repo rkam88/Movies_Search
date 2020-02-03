@@ -8,16 +8,30 @@
 
     <TextView
         android:id="@+id/text_view_title"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/double_margin"
         android:layout_marginBottom="@dimen/default_margin"
-        android:textSize="24sp"
+        android:minHeight="@dimen/favorites_star_size"
+        android:textAppearance="@style/MovieTitleTextAppearance"
         app:layout_constraintBottom_toTopOf="@id/image_view_poster"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_favorites"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Some movie title (2018)" />
+
+    <ImageView
+        android:id="@+id/button_favorites"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="@dimen/favorites_star_size"
+        android:minHeight="@dimen/favorites_star_size"
+        android:src="@drawable/ic_star_unselected_yellow_24dp"
+        app:layout_constraintBottom_toBottomOf="@id/text_view_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/text_view_title"
+        app:layout_constraintTop_toTopOf="@id/text_view_title"
+        app:layout_constraintVertical_bias="0" />
 
     <ImageView
         android:id="@+id/image_view_poster"
