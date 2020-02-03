@@ -11,6 +11,8 @@ import net.rusnet.moviessearch.commons.domain.usecase.ChangeMovieFavoriteStatus;
 import net.rusnet.moviessearch.commons.domain.usecase.LoadFavorites;
 import net.rusnet.moviessearch.commons.utils.executors.DiskIOThreadExecutor;
 import net.rusnet.moviessearch.commons.utils.executors.MainThreadExecutor;
+import net.rusnet.moviessearch.favorites.presentation.FavoritesContract;
+import net.rusnet.moviessearch.favorites.presentation.FavoritesPresenter;
 import net.rusnet.moviessearch.search.data.source.MoviesRemoteDataSource;
 import net.rusnet.moviessearch.search.data.source.OmdbApi;
 import net.rusnet.moviessearch.search.domain.usecase.LoadResultsPage;
@@ -30,13 +32,14 @@ public class Injection {
     private static DiskIOThreadExecutor DISK_IO_THREAD_EXECUTOR_INSTANCE;
     private static AsyncUseCaseExecutor ASYNC_USE_CASE_EXECUTOR_INSTANCE;
     private static MoviesLocalDataSource MOVIES_LOCAL_DATA_SOURCE_INSTANCE;
-    private static ChangeMovieFavoriteStatus ADD_TO_FAVORITES_INSTANCE;
+    private static ChangeMovieFavoriteStatus CHANGE_MOVIE_FAVORITE_STATUS_INSTANCE;
     private static LoadFavorites LOAD_FAVORITES_INSTANCE;
     private static OmdbApi OMDB_API_INSTANCE;
     private static MoviesRemoteDataSource MOVIES_REMOTE_DATA_SOURCE_INSTANCE;
     private static PerformSearch PERFORM_SEARCH_INSTANCE;
     private static LoadResultsPage LOAD_RESULTS_PAGE_INSTANCE;
     private static SearchContract.Presenter SEARCH_PRESENTER_INSTANCE;
+    private static FavoritesContract.Presenter FAVORITES_PRESENTER_INSTANCE;
 
     public static MainThreadExecutor provideMainThreadExecutor() {
         if (MAIN_THREAD_EXECUTOR_INSTANCE == null) {
@@ -70,13 +73,13 @@ public class Injection {
         return MOVIES_LOCAL_DATA_SOURCE_INSTANCE;
     }
 
-    public static ChangeMovieFavoriteStatus provideAddToFavoritesUseCase(@NonNull Context context) {
-        if (ADD_TO_FAVORITES_INSTANCE == null) {
-            ADD_TO_FAVORITES_INSTANCE = new ChangeMovieFavoriteStatus(
+    public static ChangeMovieFavoriteStatus provideChangeMovieFavoriteStatusUseCase(@NonNull Context context) {
+        if (CHANGE_MOVIE_FAVORITE_STATUS_INSTANCE == null) {
+            CHANGE_MOVIE_FAVORITE_STATUS_INSTANCE = new ChangeMovieFavoriteStatus(
                     provideAsyncUseCaseExecutor(),
                     provideMoviesLocalDataSource(context.getApplicationContext()));
         }
-        return ADD_TO_FAVORITES_INSTANCE;
+        return CHANGE_MOVIE_FAVORITE_STATUS_INSTANCE;
     }
 
     public static LoadFavorites provideLoadFavoritesUseCase(@NonNull Context context) {
@@ -117,7 +120,7 @@ public class Injection {
         return PERFORM_SEARCH_INSTANCE;
     }
 
-    public static LoadResultsPage provideLoadResultsPage() {
+    public static LoadResultsPage provideLoadResultsPageUseCase() {
         if (LOAD_RESULTS_PAGE_INSTANCE == null) {
             LOAD_RESULTS_PAGE_INSTANCE = new LoadResultsPage(
                     provideMoviesRemoteDataSource()
@@ -130,11 +133,20 @@ public class Injection {
         if (SEARCH_PRESENTER_INSTANCE == null) {
             SEARCH_PRESENTER_INSTANCE = new SearchPresenter(
                     providePerformSearchUseCase(),
-                    provideLoadResultsPage(),
-                    provideAddToFavoritesUseCase(context.getApplicationContext()),
+                    provideLoadResultsPageUseCase(),
+                    provideChangeMovieFavoriteStatusUseCase(context.getApplicationContext()),
                     provideLoadFavoritesUseCase(context.getApplicationContext()));
         }
         return SEARCH_PRESENTER_INSTANCE;
+    }
+
+    public static FavoritesContract.Presenter provideFavoritesPresenter(@NonNull Context context) {
+        if (FAVORITES_PRESENTER_INSTANCE == null) {
+            FAVORITES_PRESENTER_INSTANCE = new FavoritesPresenter(
+                    provideChangeMovieFavoriteStatusUseCase(context.getApplicationContext())
+            );
+        }
+        return FAVORITES_PRESENTER_INSTANCE;
     }
 
 }

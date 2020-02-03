@@ -9,16 +9,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import net.rusnet.moviessearch.R;
+import net.rusnet.moviessearch.commons.Injection;
 import net.rusnet.moviessearch.search.domain.model.Movie;
 import net.rusnet.moviessearch.search.presentation.SearchActivity;
 
 import java.util.List;
 
-public class FavoritesActivity extends AppCompatActivity implements FavoritesMoviesAdapter.OnFavoritesButtonClickListener {
+public class FavoritesActivity extends AppCompatActivity
+        implements FavoritesContract.View,
+        FavoritesMoviesAdapter.OnFavoritesButtonClickListener {
 
     private List<Movie> mMovieList;
     private RecyclerView mRecyclerView;
     private FavoritesMoviesAdapter mAdapter;
+    private FavoritesContract.Presenter mPresenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,10 +40,12 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesMov
         mRecyclerView = findViewById(R.id.favorites_recycler_view);
         mAdapter = new FavoritesMoviesAdapter(mMovieList, this);
         mRecyclerView.setAdapter(mAdapter);
+
+        mPresenter = Injection.provideFavoritesPresenter(getApplicationContext());
     }
 
     @Override
     public void onClick(@NonNull Movie movie) {
-
+        mPresenter.deleteFromFavorites(movie);
     }
 }
