@@ -20,6 +20,8 @@ public interface SearchContract {
         void showNetworkErrorMessage();
 
         void showOtherErrorMessage();
+
+        void updateFavoriteMovies(@NonNull List<Movie> movieList);
     }
 
     interface Presenter {
@@ -28,6 +30,10 @@ public interface SearchContract {
         void performSearch(@NonNull String searchQuery);
 
         void loadResultsPage(int pageToLoad, @NonNull String searchQuery);
+
+        void changeMovieFavoriteStatus(@NonNull Movie movie);
+
+        void loadFavoriteMovies();
     }
 
 }

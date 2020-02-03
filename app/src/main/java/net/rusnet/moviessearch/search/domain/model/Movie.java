@@ -9,11 +9,19 @@ public class Movie implements Serializable {
     private final String mTitle;
     private final String mYear;
     private final String mPosterURL;
+    private final String mImdbID;
+    private boolean mIsInFavorites;
 
-    public Movie(@NonNull String title, @NonNull String year, @NonNull String posterURL) {
-        this.mTitle = title;
-        this.mYear = year;
-        this.mPosterURL = posterURL;
+    public Movie(@NonNull String title,
+                 @NonNull String year,
+                 @NonNull String posterURL,
+                 @NonNull String imdbID,
+                 boolean isInFavorites) {
+        mTitle = title;
+        mYear = year;
+        mPosterURL = posterURL;
+        mImdbID = imdbID;
+        mIsInFavorites = isInFavorites;
     }
 
     @NonNull
@@ -30,4 +38,18 @@ public class Movie implements Serializable {
     public String getPosterURL() {
         return mPosterURL;
     }
+
+    @NonNull
+    public String getImdbID() {
+        return mImdbID;
+    }
+
+    public boolean isInFavorites() {
+        return mIsInFavorites;
+    }
+
+    public void setInFavorites(boolean inFavorites) {
+        mIsInFavorites = inFavorites;
+    }
+
 }

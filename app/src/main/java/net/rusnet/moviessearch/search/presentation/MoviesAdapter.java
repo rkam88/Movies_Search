@@ -15,6 +15,7 @@ import com.squareup.picasso.Picasso;
 import net.rusnet.moviessearch.R;
 import net.rusnet.moviessearch.search.domain.model.Movie;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
@@ -22,18 +23,29 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
     private OnScrollListener mOnScrollListener;
 
     interface OnScrollListener {
-
         void onScroll(int pageToLoad, @NonNull String searchQuery);
     }
 
-    public void setOnScrollListener(OnScrollListener onScrollListener) {
+    public void setOnScrollListener(
+            @NonNull OnScrollListener onScrollListener) {
         mOnScrollListener = onScrollListener;
+    }
+
+    private OnFavoritesButtonClickListener mOnFavoritesButtonClickListener;
+
+    interface OnFavoritesButtonClickListener {
+        void onClick(@NonNull Movie movie);
+    }
+
+    public void setOnFavoritesButtonClickListener(
+            @NonNull OnFavoritesButtonClickListener onFavoritesButtonClickListener) {
+        mOnFavoritesButtonClickListener = onFavoritesButtonClickListener;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-
         TextView mTitleTextView;
+        ImageView mFavoritesButton;
         ImageView mPosterImageView;
 
         public ViewHolder(@NonNull View itemView) {
@@ -41,24 +53,43 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
             mTitleTextView = itemView.findViewById(R.id.text_view_title);
             mPosterImageView = itemView.findViewById(R.id.image_view_poster);
+            mFavoritesButton = itemView.findViewById(R.id.button_favorites);
+            mFavoritesButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mOnFavoritesButtonClickListener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            Movie movie = mMovieList.get(position);
+                            movie.setInFavorites(!movie.isInFavorites());
+                            int newIcon = (movie.isInFavorites()) ? R.drawable.ic_star_selected_yellow_24dp : R.drawable.ic_star_unselected_yellow_24dp;
+                            mFavoritesButton.setImageResource(newIcon);
+                            mOnFavoritesButtonClickListener.onClick(movie);
+                        }
+                    }
+                }
+            });
         }
-
     }
 
     private static final String EMPTY_STRING = "";
     private static final int LOAD_MORE_OFFSET = 5;
     private static final int NEXT_PAGE = 1;
     private List<Movie> mMovieList;
+    private List<Movie> mFavoriteMovies;
+    private String mSearchQuery;
     private long mTotalResults;
     private int mMoviesPerPage;
-    private String mSearchQuery;
 
     public MoviesAdapter(@NonNull List<Movie> movieList,
                          @NonNull String searchQuery,
-                         long totalResults) {
+                         long totalResults,
+                         int moviesPerPage) {
         mMovieList = movieList;
-        mTotalResults = totalResults;
         mSearchQuery = searchQuery;
+        mTotalResults = totalResults;
+        mMoviesPerPage = moviesPerPage;
+        mFavoriteMovies = new ArrayList<>();
     }
 
     @NonNull
@@ -66,20 +97,58 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         return mMovieList;
     }
 
+    @NonNull
+    public List<Movie> getFavoriteMovies() {
+        return mFavoriteMovies;
+    }
+
+    @NonNull
+    public String getSearchQuery() {
+        return mSearchQuery;
+    }
+
     public long getTotalResults() {
         return mTotalResults;
     }
 
-    public void setMovieList(@NonNull List<Movie> movieList,
-                             @NonNull String searchQuery,
-                             long totalResults) {
+    public int getMoviesPerPage() {
+        return mMoviesPerPage;
+    }
+
+    public void setMovieList(@NonNull List<Movie> movieList) {
         mMovieList = movieList;
-        mTotalResults = totalResults;
-        mSearchQuery = searchQuery;
         mMoviesPerPage = mMovieList.size();
+        if (!mFavoriteMovies.isEmpty()) {
+            for (Movie movie : movieList) {
+                for (Movie favoriteMovie : mFavoriteMovies) {
+                    if (movie.getImdbID().equals(favoriteMovie.getImdbID()))
+                        movie.setInFavorites(true);
+                }
+            }
+        }
+    }
+
+    public void setSearchQuery(@NonNull String searchQuery) {
+        mSearchQuery = searchQuery;
+    }
+
+    public void setTotalResults(long totalResults) {
+        mTotalResults = totalResults;
+    }
+
+    public void setFavoriteMovies(@NonNull List<Movie> favoriteMovies) {
+        mFavoriteMovies = favoriteMovies;
     }
 
     public void updateMovieList(@NonNull List<Movie> movieList) {
+        if (!mFavoriteMovies.isEmpty()) {
+            for (Movie movie : movieList) {
+                for (Movie favoriteMovie : mFavoriteMovies) {
+                    if (movie.getImdbID().equals(favoriteMovie.getImdbID()))
+                        movie.setInFavorites(true);
+                }
+            }
+        }
         mMovieList.addAll(movieList);
     }
 
@@ -100,6 +169,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         Movie movie = mMovieList.get(position);
 
         TextView titleTextView = holder.mTitleTextView;
+
+        ImageView favoritesButton = holder.mFavoritesButton;
+        int newIcon = (movie.isInFavorites()) ? R.drawable.ic_star_selected_yellow_24dp : R.drawable.ic_star_unselected_yellow_24dp;
+        favoritesButton.setImageResource(newIcon);
+
         ImageView posterImageView = holder.mPosterImageView;
 
         String fullTitle = String.format(titleTextView.getContext().getString(R.string.movie_title),

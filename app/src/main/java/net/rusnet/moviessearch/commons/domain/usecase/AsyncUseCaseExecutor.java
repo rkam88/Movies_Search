@@ -1,6 +1,7 @@
 package net.rusnet.moviessearch.commons.domain.usecase;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import net.rusnet.moviessearch.commons.utils.executors.AppExecutor;
 
@@ -18,7 +19,7 @@ public class AsyncUseCaseExecutor {
 
     <Q, R> void execute(
             @NonNull final AsyncUseCase<Q, R> useCase,
-            @NonNull final Q requestValues,
+            @Nullable final Q requestValues,
             @NonNull final UseCase.Callback<R> callback) {
         mWorkerThreadExecutor.execute(new Runnable() {
             @Override

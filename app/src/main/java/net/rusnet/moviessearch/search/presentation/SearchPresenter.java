@@ -2,6 +2,8 @@ package net.rusnet.moviessearch.search.presentation;
 
 import androidx.annotation.NonNull;
 
+import net.rusnet.moviessearch.commons.domain.usecase.ChangeMovieFavoriteStatus;
+import net.rusnet.moviessearch.commons.domain.usecase.LoadFavorites;
 import net.rusnet.moviessearch.commons.domain.usecase.UseCase;
 import net.rusnet.moviessearch.search.domain.model.Movie;
 import net.rusnet.moviessearch.search.domain.model.SearchResult;
@@ -18,11 +20,17 @@ public class SearchPresenter implements SearchContract.Presenter {
     private WeakReference<SearchContract.View> mSearchViewWeakReference;
     private PerformSearch mPerformSearch;
     private LoadResultsPage mLoadResultsPage;
+    private ChangeMovieFavoriteStatus mChangeMovieFavoriteStatus;
+    private LoadFavorites mLoadFavorites;
 
     public SearchPresenter(@NonNull PerformSearch performSearch,
-                           @NonNull LoadResultsPage loadResultsPage) {
+                           @NonNull LoadResultsPage loadResultsPage,
+                           ChangeMovieFavoriteStatus changeMovieFavoriteStatus,
+                           LoadFavorites loadFavorites) {
         mPerformSearch = performSearch;
         mLoadResultsPage = loadResultsPage;
+        mChangeMovieFavoriteStatus = changeMovieFavoriteStatus;
+        mLoadFavorites = loadFavorites;
     }
 
     @Override
@@ -71,6 +79,29 @@ public class SearchPresenter implements SearchContract.Presenter {
                         }
                     }
                 });
+    }
+
+    @Override
+    public void changeMovieFavoriteStatus(@NonNull Movie movie) {
+        mChangeMovieFavoriteStatus.execute(movie, new UseCase.Callback<Void>() {
+            @Override
+            public void onResult(@NonNull Void result) {
+                loadFavoriteMovies();
+            }
+        });
+    }
+
+    @Override
+    public void loadFavoriteMovies() {
+        mLoadFavorites.execute(null, new UseCase.Callback<List<Movie>>() {
+            @Override
+            public void onResult(@NonNull List<Movie> result) {
+                SearchContract.View view = mSearchViewWeakReference.get();
+                if (view != null) {
+                    view.updateFavoriteMovies(result);
+                }
+            }
+        });
     }
 
     private void showMovies(@NonNull List<Movie> movieList,

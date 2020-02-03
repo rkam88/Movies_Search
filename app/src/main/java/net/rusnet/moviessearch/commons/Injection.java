@@ -1,6 +1,14 @@
 package net.rusnet.moviessearch.commons;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import net.rusnet.moviessearch.commons.data.source.MoviesDatabase;
+import net.rusnet.moviessearch.commons.data.source.MoviesLocalDataSource;
 import net.rusnet.moviessearch.commons.domain.usecase.AsyncUseCaseExecutor;
+import net.rusnet.moviessearch.commons.domain.usecase.ChangeMovieFavoriteStatus;
+import net.rusnet.moviessearch.commons.domain.usecase.LoadFavorites;
 import net.rusnet.moviessearch.commons.utils.executors.DiskIOThreadExecutor;
 import net.rusnet.moviessearch.commons.utils.executors.MainThreadExecutor;
 import net.rusnet.moviessearch.search.data.source.MoviesRemoteDataSource;
@@ -21,6 +29,9 @@ public class Injection {
     private static MainThreadExecutor MAIN_THREAD_EXECUTOR_INSTANCE;
     private static DiskIOThreadExecutor DISK_IO_THREAD_EXECUTOR_INSTANCE;
     private static AsyncUseCaseExecutor ASYNC_USE_CASE_EXECUTOR_INSTANCE;
+    private static MoviesLocalDataSource MOVIES_LOCAL_DATA_SOURCE_INSTANCE;
+    private static ChangeMovieFavoriteStatus ADD_TO_FAVORITES_INSTANCE;
+    private static LoadFavorites LOAD_FAVORITES_INSTANCE;
     private static OmdbApi OMDB_API_INSTANCE;
     private static MoviesRemoteDataSource MOVIES_REMOTE_DATA_SOURCE_INSTANCE;
     private static PerformSearch PERFORM_SEARCH_INSTANCE;
@@ -49,6 +60,32 @@ public class Injection {
             );
         }
         return ASYNC_USE_CASE_EXECUTOR_INSTANCE;
+    }
+
+    public static MoviesLocalDataSource provideMoviesLocalDataSource(@NonNull Context context) {
+        if (MOVIES_LOCAL_DATA_SOURCE_INSTANCE == null) {
+            MoviesDatabase database = MoviesDatabase.getDatabase(context.getApplicationContext());
+            MOVIES_LOCAL_DATA_SOURCE_INSTANCE = new MoviesLocalDataSource(database.movieDao());
+        }
+        return MOVIES_LOCAL_DATA_SOURCE_INSTANCE;
+    }
+
+    public static ChangeMovieFavoriteStatus provideAddToFavoritesUseCase(@NonNull Context context) {
+        if (ADD_TO_FAVORITES_INSTANCE == null) {
+            ADD_TO_FAVORITES_INSTANCE = new ChangeMovieFavoriteStatus(
+                    provideAsyncUseCaseExecutor(),
+                    provideMoviesLocalDataSource(context.getApplicationContext()));
+        }
+        return ADD_TO_FAVORITES_INSTANCE;
+    }
+
+    public static LoadFavorites provideLoadFavoritesUseCase(@NonNull Context context) {
+        if (LOAD_FAVORITES_INSTANCE == null) {
+            LOAD_FAVORITES_INSTANCE = new LoadFavorites(
+                    provideAsyncUseCaseExecutor(),
+                    provideMoviesLocalDataSource(context.getApplicationContext()));
+        }
+        return LOAD_FAVORITES_INSTANCE;
     }
 
     public static OmdbApi provideOmdbApi() {
@@ -89,12 +126,13 @@ public class Injection {
         return LOAD_RESULTS_PAGE_INSTANCE;
     }
 
-    public static SearchContract.Presenter provideSearchPresenter() {
+    public static SearchContract.Presenter provideSearchPresenter(@NonNull Context context) {
         if (SEARCH_PRESENTER_INSTANCE == null) {
             SEARCH_PRESENTER_INSTANCE = new SearchPresenter(
                     providePerformSearchUseCase(),
-                    provideLoadResultsPage()
-            );
+                    provideLoadResultsPage(),
+                    provideAddToFavoritesUseCase(context.getApplicationContext()),
+                    provideLoadFavoritesUseCase(context.getApplicationContext()));
         }
         return SEARCH_PRESENTER_INSTANCE;
     }

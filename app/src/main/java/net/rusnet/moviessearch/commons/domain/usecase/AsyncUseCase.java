@@ -1,6 +1,7 @@
 package net.rusnet.moviessearch.commons.domain.usecase;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public abstract class AsyncUseCase<Q, R> extends UseCase<Q, R> {
 
@@ -13,7 +14,7 @@ public abstract class AsyncUseCase<Q, R> extends UseCase<Q, R> {
         mAsyncUseCaseExecutor = asyncUseCaseExecutor;
     }
 
-    public void execute(@NonNull final Q requestValues, @NonNull Callback<R> callback) {
+    public void execute(@Nullable final Q requestValues, @NonNull Callback<R> callback) {
         mAsyncUseCaseExecutor.execute(
                 this,
                 requestValues,
@@ -21,6 +22,6 @@ public abstract class AsyncUseCase<Q, R> extends UseCase<Q, R> {
     }
 
     @NonNull
-    protected abstract R doInBackground(@NonNull Q requestValues);
+    protected abstract R doInBackground(@Nullable Q requestValues);
 
 }

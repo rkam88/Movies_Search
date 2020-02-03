@@ -74,7 +74,9 @@ public class MoviesRemoteDataSource implements IMoviesRemoteDataSource {
                 Movie movie = new Movie(
                         omDbMovie.getTitle(),
                         omDbMovie.getYear(),
-                        (omDbMovie.getPoster().equals(NO_POSTER) ? EMPTY_STRING : omDbMovie.getPoster())
+                        (omDbMovie.getPoster().equals(NO_POSTER) ? EMPTY_STRING : omDbMovie.getPoster()),
+                        omDbMovie.getImdbID(),
+                        false
                 );
                 movieList.add(movie);
             }
