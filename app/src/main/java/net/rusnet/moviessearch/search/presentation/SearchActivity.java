@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +50,7 @@ public class SearchActivity extends AppCompatActivity
     private ImageButton mSearchButton;
     private RecyclerView mRecyclerView;
     private MoviesAdapter mMoviesAdapter;
+    private FrameLayout mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +126,16 @@ public class SearchActivity extends AppCompatActivity
     }
 
     @Override
+    public void showProgress() {
+        mProgress.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideProgress() {
+        mProgress.setVisibility(View.GONE);
+    }
+
+    @Override
     public void onScroll(int pageToLoad, @NonNull String searchQuery) {
         mPresenter.loadResultsPage(pageToLoad, searchQuery);
     }
@@ -158,6 +170,8 @@ public class SearchActivity extends AppCompatActivity
     private void initViews() {
         mSearchEditText = findViewById(R.id.edit_text_search);
         mSearchButton = findViewById(R.id.button_search);
+        mProgress = findViewById(R.id.progress_bar_layout);
+
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

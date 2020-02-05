@@ -22,6 +22,10 @@ public interface SearchContract {
         void showOtherErrorMessage();
 
         void updateFavoriteMovies(@NonNull List<Movie> movieList);
+
+        void showProgress();
+
+        void hideProgress();
     }
 
     interface Presenter {
