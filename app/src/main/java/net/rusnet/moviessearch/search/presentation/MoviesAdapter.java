@@ -190,12 +190,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
                 movie.getYear());
         titleTextView.setText(fullTitle);
 
-        String imageUri = movie.getPosterURL();
-        if (imageUri.equals(EMPTY_STRING)) {
+        String imageUrl = movie.getPosterURL();
+        if (imageUrl.equals(EMPTY_STRING)) {
             posterImageView.setImageResource(R.drawable.ic_no_poster_black_48dp);
         } else {
             Glide.with(titleTextView)
-                    .load(imageUri)
+                    .load(imageUrl)
                     .fitCenter()
                     .centerCrop()
                     .placeholder(R.drawable.ic_search_black_24dp)
