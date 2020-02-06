@@ -109,19 +109,16 @@ public class SearchActivity extends AppCompatActivity
 
     @Override
     public void showRequestErrorMessage() {
-        mMoviesAdapter.setLoadingStatus(false);
         Toast.makeText(this, R.string.error_message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void showNetworkErrorMessage() {
-        mMoviesAdapter.setLoadingStatus(false);
         Toast.makeText(this, R.string.network_error_message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void showOtherErrorMessage() {
-        mMoviesAdapter.setLoadingStatus(false);
         Toast.makeText(this, R.string.other_error_message, Toast.LENGTH_SHORT).show();
     }
 
@@ -139,6 +136,12 @@ public class SearchActivity extends AppCompatActivity
     @Override
     public void hideSearchProgressBar() {
         mSearchProgressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void hideLoadingMoreProgressBar() {
+        mMoviesAdapter.setLoadingStatus(false);
+        hideLoadingMoreIndicator();
     }
 
     @Override

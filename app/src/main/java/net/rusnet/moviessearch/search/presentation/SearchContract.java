@@ -26,6 +26,8 @@ public interface SearchContract {
         void showSearchProgressBar();
 
         void hideSearchProgressBar();
+
+        void hideLoadingMoreProgressBar();
     }
 
     interface Presenter {

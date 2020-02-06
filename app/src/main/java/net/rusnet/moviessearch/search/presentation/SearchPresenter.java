@@ -77,6 +77,7 @@ public class SearchPresenter implements SearchContract.Presenter {
                             case ERROR_NETWORK:
                             case ERROR_OTHER:
                                 showErrorMessage(result.getSearchResultStatus());
+                                hideLoadMoreProgressBarInView();
                                 break;
                         }
                     }
@@ -150,6 +151,13 @@ public class SearchPresenter implements SearchContract.Presenter {
         SearchContract.View view = mSearchViewWeakReference.get();
         if (view != null) {
             view.hideSearchProgressBar();
+        }
+    }
+
+    private void hideLoadMoreProgressBarInView() {
+        SearchContract.View view = mSearchViewWeakReference.get();
+        if (view != null) {
+            view.hideLoadingMoreProgressBar();
         }
     }
 
