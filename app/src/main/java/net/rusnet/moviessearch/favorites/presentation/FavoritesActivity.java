@@ -16,25 +16,38 @@ import net.rusnet.moviessearch.commons.Injection;
 import net.rusnet.moviessearch.search.domain.model.Movie;
 import net.rusnet.moviessearch.search.presentation.SearchActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FavoritesActivity extends AppCompatActivity
         implements FavoritesContract.View,
-        FavoritesMoviesAdapter.OnFavoritesButtonClickListener {
+        FavoritesMoviesAdapter.OnFavoritesButtonClickListener,
+        ConfirmationDialogFragment.ConfirmationDialogListener {
 
+    private static final String CONFIRMATION_DIALOG_TAG = "CONFIRMATION_DIALOG_TAG";
+    private static final String KEY_MOVIE_TO_DELETE_POSITION = "KEY_MOVIE_TO_DELETE_POSITION";
+    private static final String KEY_MOVIE_LIST = "KEY_MOVIE_LIST";
+    private static final String KEY_ACTIVITY_RESULT_CODE = "KEY_ACTIVITY_RESULT_CODE";
     private List<Movie> mMovieList;
     private RecyclerView mRecyclerView;
     private FavoritesMoviesAdapter mAdapter;
     private FavoritesContract.Presenter mPresenter;
     private FrameLayout mInfoMessage;
+    private int mMovieToDeletePosition;
+    private int mActivityResultCode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites);
 
-        //noinspection unchecked
-        mMovieList = (List) getIntent().getSerializableExtra(SearchActivity.EXTRA_FAVORITE_MOVIES_LIST);
+        if (savedInstanceState == null) {
+            //noinspection unchecked
+            mMovieList = (List) getIntent().getSerializableExtra(SearchActivity.EXTRA_FAVORITE_MOVIES_LIST);
+        } else {
+            //noinspection unchecked
+            mMovieList = (List) savedInstanceState.getSerializable(KEY_MOVIE_LIST);
+        }
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -52,16 +65,34 @@ public class FavoritesActivity extends AppCompatActivity
     }
 
     @Override
-    public void onClick(@NonNull Movie movie) {
-        if (mMovieList.isEmpty()) mInfoMessage.setVisibility(View.VISIBLE);
-        mPresenter.deleteFromFavorites(movie);
-        setResult(RESULT_OK);
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt(KEY_MOVIE_TO_DELETE_POSITION, mMovieToDeletePosition);
+        outState.putInt(KEY_ACTIVITY_RESULT_CODE, mActivityResultCode);
+        outState.putSerializable(KEY_MOVIE_LIST, new ArrayList<>(mMovieList));
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mMovieToDeletePosition = savedInstanceState.getInt(KEY_MOVIE_TO_DELETE_POSITION);
+        mActivityResultCode = savedInstanceState.getInt(KEY_ACTIVITY_RESULT_CODE);
+    }
+
+    @Override
+    public void onClick(int movieToDeletePosition) {
+        mMovieToDeletePosition = movieToDeletePosition;
+
+        String dialogText = getString(R.string.delete_from_favorites);
+        ConfirmationDialogFragment newFragment;
+        newFragment = ConfirmationDialogFragment.newInstance(dialogText);
+        newFragment.show(getSupportFragmentManager(), CONFIRMATION_DIALOG_TAG);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            finish();
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -69,7 +100,20 @@ public class FavoritesActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        setResult(mActivityResultCode);
         finish();
     }
 
+    @Override
+    public void onPositiveResponse() {
+        Movie movie = mMovieList.get(mMovieToDeletePosition);
+
+        mMovieList.remove(mMovieToDeletePosition);
+        if (mMovieList.isEmpty()) mInfoMessage.setVisibility(View.VISIBLE);
+
+        mAdapter.notifyItemRemoved(mMovieToDeletePosition);
+
+        mPresenter.deleteFromFavorites(movie);
+        mActivityResultCode = RESULT_OK;
+    }
 }

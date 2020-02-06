@@ -7,5 +7,8 @@
     <string name="movie_title">%s (%s)"</string>
     <string name="favorites">Избранное</string>
     <string name="no_movies_in_favorites">У Вас нет фильмов в Избранном!</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="delete_from_favorites">Вы уверены, что хотите удалить фильм из Избранного?</string>
 
 </resources>

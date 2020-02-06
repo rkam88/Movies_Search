@@ -20,7 +20,7 @@ import java.util.List;
 public class FavoritesMoviesAdapter extends RecyclerView.Adapter<FavoritesMoviesAdapter.ViewHolder> {
 
     interface OnFavoritesButtonClickListener {
-        void onClick(@NonNull Movie movie);
+        void onClick(int movieToDeletePosition);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -41,10 +41,7 @@ public class FavoritesMoviesAdapter extends RecyclerView.Adapter<FavoritesMovies
                     if (mOnFavoritesButtonClickListener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            Movie movie = mFavoriteMoviesList.get(position);
-                            mFavoriteMoviesList.remove(position);
-                            FavoritesMoviesAdapter.this.notifyItemRemoved(position);
-                            mOnFavoritesButtonClickListener.onClick(movie);
+                            mOnFavoritesButtonClickListener.onClick(position);
                         }
                     }
                 }
