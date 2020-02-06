@@ -5,10 +5,10 @@
     android:id="@+id/constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
     android:orientation="vertical"
     android:padding="@dimen/default_padding"
-    tools:context=".search.presentation.SearchActivity"
-    android:background="@color/backgroundColor">
+    tools:context=".search.presentation.SearchActivity">
 
 
     <EditText
@@ -38,7 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/default_margin"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/load_more_progress_bar"
         app:layout_constraintEnd_toEndOf="@id/button_search"
         app:layout_constraintStart_toStartOf="@id/edit_text_search"
         app:layout_constraintTop_toBottomOf="@id/edit_text_search">
@@ -67,5 +67,19 @@
         </FrameLayout>
 
     </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/load_more_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/default_margin"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/button_search"
+        app:layout_constraintStart_toStartOf="@id/edit_text_search"
+        app:layout_constraintTop_toBottomOf="@id/recycler_view_container"
+        app:layout_goneMarginTop="@dimen/no_margin"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

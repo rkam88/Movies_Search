@@ -40,12 +40,12 @@ public class SearchPresenter implements SearchContract.Presenter {
 
     @Override
     public void performSearch(@NonNull final String searchQuery) {
-        showProgressBarInView();
+        showSearchProgressBarInView();
         mPerformSearch.execute(searchQuery,
                 new UseCase.Callback<SearchResult>() {
                     @Override
                     public void onResult(@NonNull SearchResult result) {
-                        hideProgressBarInView();
+                        hideSearchProgressBarInView();
                         switch (result.getSearchResultStatus()) {
                             case SUCCESSFUL:
                                 showMovies(result.getMovieList(),
@@ -139,17 +139,17 @@ public class SearchPresenter implements SearchContract.Presenter {
         }
     }
 
-    private void showProgressBarInView() {
+    private void showSearchProgressBarInView() {
         SearchContract.View view = mSearchViewWeakReference.get();
         if (view != null) {
-            view.showProgress();
+            view.showSearchProgressBar();
         }
     }
 
-    private void hideProgressBarInView() {
+    private void hideSearchProgressBarInView() {
         SearchContract.View view = mSearchViewWeakReference.get();
         if (view != null) {
-            view.hideProgress();
+            view.hideSearchProgressBar();
         }
     }
 

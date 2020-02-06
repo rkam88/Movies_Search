@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +33,8 @@ import java.util.List;
 public class SearchActivity extends AppCompatActivity
         implements SearchContract.View,
         MoviesAdapter.OnScrollListener,
-        MoviesAdapter.OnFavoritesButtonClickListener {
+        MoviesAdapter.OnFavoritesButtonClickListener,
+        MoviesAdapter.LoadingMoreIndicator {
 
     public static final String EXTRA_FAVORITE_MOVIES_LIST = "EXTRA_FAVORITE_MOVIES_LIST";
     private static final int STARTING_SCROLL_POSITION = 0;
@@ -50,7 +52,8 @@ public class SearchActivity extends AppCompatActivity
     private ImageButton mSearchButton;
     private RecyclerView mRecyclerView;
     private MoviesAdapter mMoviesAdapter;
-    private FrameLayout mProgress;
+    private FrameLayout mSearchProgressBar;
+    private ProgressBar mLoadMoreProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,16 +109,19 @@ public class SearchActivity extends AppCompatActivity
 
     @Override
     public void showRequestErrorMessage() {
+        mMoviesAdapter.setLoadingStatus(false);
         Toast.makeText(this, R.string.error_message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void showNetworkErrorMessage() {
+        mMoviesAdapter.setLoadingStatus(false);
         Toast.makeText(this, R.string.network_error_message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void showOtherErrorMessage() {
+        mMoviesAdapter.setLoadingStatus(false);
         Toast.makeText(this, R.string.other_error_message, Toast.LENGTH_SHORT).show();
     }
 
@@ -126,13 +132,13 @@ public class SearchActivity extends AppCompatActivity
     }
 
     @Override
-    public void showProgress() {
-        mProgress.setVisibility(View.VISIBLE);
+    public void showSearchProgressBar() {
+        mSearchProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void hideProgress() {
-        mProgress.setVisibility(View.GONE);
+    public void hideSearchProgressBar() {
+        mSearchProgressBar.setVisibility(View.GONE);
     }
 
     @Override
@@ -170,7 +176,8 @@ public class SearchActivity extends AppCompatActivity
     private void initViews() {
         mSearchEditText = findViewById(R.id.edit_text_search);
         mSearchButton = findViewById(R.id.button_search);
-        mProgress = findViewById(R.id.progress_bar_layout);
+        mSearchProgressBar = findViewById(R.id.progress_bar_layout);
+        mLoadMoreProgressBar = findViewById(R.id.load_more_progress_bar);
 
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -210,6 +217,7 @@ public class SearchActivity extends AppCompatActivity
         mMoviesAdapter = new MoviesAdapter(movieList, searchQuery, totalResults, moviesPerPage);
         mMoviesAdapter.setOnScrollListener(this);
         mMoviesAdapter.setOnFavoritesButtonClickListener(this);
+        mMoviesAdapter.setLoadingMoreIndicator(this);
 
         mRecyclerView.setAdapter(mMoviesAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -233,6 +241,16 @@ public class SearchActivity extends AppCompatActivity
             view = findViewById(R.id.constraint_layout);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    @Override
+    public void showLoadingMoreIndicator() {
+        mLoadMoreProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideLoadingMoreIndicator() {
+        mLoadMoreProgressBar.setVisibility(View.GONE);
     }
 
 }

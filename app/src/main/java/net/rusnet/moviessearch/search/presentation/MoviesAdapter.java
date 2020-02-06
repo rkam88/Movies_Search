@@ -42,6 +42,18 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
         mOnFavoritesButtonClickListener = onFavoritesButtonClickListener;
     }
 
+    private LoadingMoreIndicator mLoadingMoreIndicator;
+
+    interface LoadingMoreIndicator {
+        void showLoadingMoreIndicator();
+
+        void hideLoadingMoreIndicator();
+    }
+
+    public void setLoadingMoreIndicator(@NonNull LoadingMoreIndicator loadingMoreIndicator) {
+        mLoadingMoreIndicator = loadingMoreIndicator;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView mTitleTextView;
@@ -80,6 +92,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
     private String mSearchQuery;
     private long mTotalResults;
     private int mMoviesPerPage;
+    private boolean mLoadingMore;
 
     public MoviesAdapter(@NonNull List<Movie> movieList,
                          @NonNull String searchQuery,
@@ -147,6 +160,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
                 }
             }
         }
+        mLoadingMore = false;
     }
 
     public void updateMovieList(@NonNull List<Movie> movieList) {
@@ -159,6 +173,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
             }
         }
         mMovieList.addAll(movieList);
+        mLoadingMore = false;
+        mLoadingMoreIndicator.hideLoadingMoreIndicator();
+    }
+
+    public void setLoadingStatus(boolean loadingMore) {
+        mLoadingMore = loadingMore;
     }
 
     @NonNull
@@ -207,6 +227,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
                 position == mMovieList.size() - LOAD_MORE_OFFSET) {
             int pageToLoad = mMovieList.size() / mMoviesPerPage + NEXT_PAGE;
             mOnScrollListener.onScroll(pageToLoad, mSearchQuery);
+            mLoadingMore = true;
+        }
+
+        if (mLoadingMore && position == mMovieList.size() - 1) {
+            mLoadingMoreIndicator.showLoadingMoreIndicator();
         }
     }
 

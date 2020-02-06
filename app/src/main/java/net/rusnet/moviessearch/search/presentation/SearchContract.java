@@ -23,9 +23,9 @@ public interface SearchContract {
 
         void updateFavoriteMovies(@NonNull List<Movie> movieList);
 
-        void showProgress();
+        void showSearchProgressBar();
 
-        void hideProgress();
+        void hideSearchProgressBar();
     }
 
     interface Presenter {
