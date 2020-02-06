@@ -2,6 +2,8 @@ package net.rusnet.moviessearch.favorites.presentation;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +26,7 @@ public class FavoritesActivity extends AppCompatActivity
     private RecyclerView mRecyclerView;
     private FavoritesMoviesAdapter mAdapter;
     private FavoritesContract.Presenter mPresenter;
+    private FrameLayout mInfoMessage;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,6 +41,9 @@ public class FavoritesActivity extends AppCompatActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        mInfoMessage = findViewById(R.id.message_frame_layout);
+        if (mMovieList.isEmpty()) mInfoMessage.setVisibility(View.VISIBLE);
+
         mRecyclerView = findViewById(R.id.favorites_recycler_view);
         mAdapter = new FavoritesMoviesAdapter(mMovieList, this);
         mRecyclerView.setAdapter(mAdapter);
@@ -47,6 +53,7 @@ public class FavoritesActivity extends AppCompatActivity
 
     @Override
     public void onClick(@NonNull Movie movie) {
+        if (mMovieList.isEmpty()) mInfoMessage.setVisibility(View.VISIBLE);
         mPresenter.deleteFromFavorites(movie);
         setResult(RESULT_OK);
     }

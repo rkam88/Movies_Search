@@ -5,6 +5,7 @@
     <string name="network_error_message">Ошибка при выполнении запроса!\nПроверьте Ваше соединение с сетью.</string>
     <string name="other_error_message">При выполнении запроса произошла ошибка!</string>
     <string name="movie_title">%s (%s)"</string>
-    <string name="favorites">Избранные</string>
+    <string name="favorites">Избранное</string>
+    <string name="no_movies_in_favorites">У Вас нет фильмов в Избранном!</string>
 
 </resources>
